@@ -1,7 +1,10 @@
+import correlation
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import sessionmaker, relationship, backref, scoped_session
+
+#The file that calculates the Pearson correlation
 
 
 engine = create_engine("sqlite:///ratings.db", echo=False)
@@ -26,6 +29,23 @@ class User(Base):
         self.password = password
         self.age = age
         self.zipcode = zipcode
+
+    def similarity(self, other):
+
+        my_ratings = {}
+        paired_ratings = []
+        for r in self.ratings:
+            my_ratings[r.movie_id] = r
+
+        for o in other.ratings:
+            matching_rating = my_ratings.get(o.movie_id)
+            if matching_rating:
+                paired_ratings.append( (matching_rating.rating, o.rating) )
+
+        if paired_ratings:
+            return correlation.pearson(paired_ratings)
+        else:
+            return 0.0
 
 class Movie(Base):
     __tablename__ = "Movies"
@@ -58,6 +78,8 @@ class Rating(Base):
         self.movie_id = movie_id
         self.user_id = user_id
         self.rating = rating
+
+
 
 ### End class declarations
 

@@ -21,7 +21,6 @@ def pearson(pairs):
     denominator = sqrt((squares1 - (sum1*sum1) / size) * (squares2 - (sum2*sum2)/size))
 
     if denominator == 0:
-        print "the denominator is zero"
         return 0
 
     return numerator/denominator

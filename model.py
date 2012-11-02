@@ -31,7 +31,6 @@ class User(Base):
         self.zipcode = zipcode
 
     def similarity(self, other):
-
         my_ratings = {}
         paired_ratings = []
         for r in self.ratings:
@@ -46,6 +45,38 @@ class User(Base):
             return correlation.pearson(paired_ratings)
         else:
             return 0.0
+
+    def predict_rating(self, movie):
+
+        #We start with a user, and a movie in question
+        #The user hasn't rated that movie yet, so let's pull all the other ratings for that movie
+        other_ratings = movie.ratings
+
+        #We will iterate through the list of other_ratings and pull several things:
+        #   --> the user who made that rating
+        #   --> the similarity of that other user to the primary user --> put this in part 1 of the tuple
+        #   --> the actual rating --> put this in part 2 of the tuple
+        #We will end up with a list of tuples: (similarity coefficient, rating)
+        all_similarities = [ (self.similarity(o.user), o) for o in other_ratings]
+
+        #Filter out the negative similarity coefficients
+        #Make sure you still have enough tuples to work with
+        similarities = [s for s in all_similarities if s[0] > 0]
+        if not similarities:
+            return None
+
+        #With this list of tuples, we could just pick the one with highest similarity coefficient and use it to predict
+        #However, this method is susceptible to outliers, if we pick just one
+        #Therefore, we will blend ALL of the elements in this tuple list and use it to predict the rating
+        #    weighted mean = sum(all ratings * all similarity coefficients) / sum(all coefficients) 
+
+        numerator = sum( [ coefficient * rating.rating for coefficient, rating in similarities ] )
+        denominator = sum( [ coefficient for coefficient, rating in similarities ] )
+
+        #The predicted rating = similarity coefficient * rating from the top user
+        return numerator / denominator
+
+
 
 class Movie(Base):
     __tablename__ = "Movies"

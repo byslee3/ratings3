@@ -14,7 +14,7 @@
     <br>
     <br>
 
-    <form action="{{ url_for("test") }}" method=POST>
+    <form action="/add_rating/{{ specific_movie.id }}" method=POST>
 
         <label><h2>Add my rating:</h2>
         <select name = "my_rating">

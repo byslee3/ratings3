@@ -73,7 +73,37 @@ def show_specific_movie(id):
 
     return render_template("show_specific_movie.html", specific_movie=specific_movie, average_rating=average_rating)
 
+@app.route("/add_rating/<int:id>", methods=["GET","POST"])
+def add_rating(id):
+
+    specific_movie_id = id
+    specific_user_id = session["user_id"]
+    specific_rating = request.form["my_rating"]
+
+    #first check if the record with same user_id and movie_id already exists
+    #if so, overwrite this rating
+    #else, add a new record to the Ratings table
+    existing_rating = model.session.query(model.Rating).filter(model.Rating.movie_id==specific_movie_id, model.Rating.user_id==specific_user_id).first()
+    
+    if existing_rating:
+        existing_rating.rating = specific_rating
+        model.session.commit()
+    else:
+        new_rating = model.Rating(specific_movie_id, specific_user_id, specific_rating)
+        model.session.add(new_rating)
+        model.session.commit()
+
+    flash("You added a new rating")
+    return redirect("/profile")
 
 
+#app starts running here
 if __name__ == "__main__":
     app.run(debug = True)
+
+
+
+
+
+
+

@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block body %}
+
+    <a href="{{ url_for("profile") }}">back to profile</a>
+
+    <h2>Search results</h2>
+
+    <br>
+    <br>
+
+    <strong>You searched for:</strong> {{ searched_movie_name }}
+
+    <br>
+    <br>
+
+    <strong>Here is a list of all matching movies:</strong>
+
+    <br>
+
+    {% for m in all_matching_movies %}
+        <ul><li>
+        <a href="/show_specific_movie/{{m.id}}">
+            {{ m.title }}
+        </a>
+        </li></ul>
+    {% endfor %}
+
+
+{% endblock %}

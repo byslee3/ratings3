@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block body %}
+
+    <a href="{{ url_for("profile") }}">back to profile</a>
+
+    <h2>Movie Name:</h2>
+    <h3>{{ specific_movie.title }}</h3>
+
+    <br>
+    <br>
+
+    <h2>The average rating is: {{ average_rating }}</h2>
+
+    <br>
+    <br>
+
+    <form action="{{ url_for("test") }}" method=POST>
+
+        <label><h2>Add my rating:</h2>
+        <select name = "my_rating">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+        </select>
+        </label>
+
+        <input type=submit value="Submit">
+
+    </form>
+
+
+    <br>
+    <br>
+
+    <h3>Ratings:</h3>
+
+    {% for r in specific_movie.ratings %} 
+
+        <ul>{{ r.rating }}</ul>
+
+    {% endfor %}
+
+{% endblock %}

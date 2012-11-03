@@ -62,6 +62,11 @@ def show_specific_movie(id):
     
     specific_movie = model.session.query(model.Movie).filter(model.Movie.id == id).first()
 
+    current_user_id = session["user_id"]
+    current_user = model.session.query(model.User).get(current_user_id)
+    existing_user_rating = "Not rated yet"
+
+    #Calculate the average rating for this movie
     ratings_sum = 0.0
     ratings_count = 0
 
@@ -69,9 +74,20 @@ def show_specific_movie(id):
         ratings_sum += r.rating
         ratings_count += 1
 
+        #BTW, also check if user has already rated
+        if r.user_id == current_user_id:
+            existing_user_rating = r.rating
+
     average_rating = round(ratings_sum / ratings_count,2)
 
-    return render_template("show_specific_movie.html", specific_movie=specific_movie, average_rating=average_rating)
+    #If the user has not rated the movie yet, calculate a prediction
+    #Otherwise, leave the prediction as None and pass the user rating to the html template
+    if existing_user_rating == "Not rated yet":
+        predicted_rating = current_user.predict_rating(specific_movie)
+    else:
+        predicted_rating = None
+
+    return render_template("show_specific_movie.html", specific_movie=specific_movie, average_rating=average_rating, predicted_rating=predicted_rating, existing_user_rating=existing_user_rating)
 
 @app.route("/add_rating/<int:id>", methods=["GET","POST"])
 def add_rating(id):

@@ -63,7 +63,7 @@ class User(Base):
         #Make sure you still have enough tuples to work with
         similarities = [s for s in all_similarities if s[0] > 0]
         if not similarities:
-            return None
+            return "Not enough data"
 
         #With this list of tuples, we could just pick the one with highest similarity coefficient and use it to predict
         #However, this method is susceptible to outliers, if we pick just one

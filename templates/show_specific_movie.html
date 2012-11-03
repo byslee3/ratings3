@@ -14,6 +14,18 @@
     <br>
     <br>
 
+    <h2>You have already rated this movie as: {{ existing_user_rating }}</h2>
+
+    <br>
+    <br>
+
+    {% if predicted_rating %}
+        <h2>We predict that you would rate this movie as: {{ predicted_rating }}</h2>
+    {% endif %}
+
+    <br>
+    <br>
+
     <form action="/add_rating/{{ specific_movie.id }}" method=POST>
 
         <label><h2>Add my rating:</h2>

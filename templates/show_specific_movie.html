@@ -26,6 +26,13 @@
     <br>
     <br>
 
+    <h2>The Judgemental Eye rated this movie as: {{ eye_rating }}</h2>
+    <h3>The difference between you and the Judgemental Eye is: {{ difference }}</h3>
+    <h3>The Judgemental Eye says to you: {{ beratement }}</h3>
+
+    <br>
+    <br>
+
     <form action="/add_rating/{{ specific_movie.id }}" method=POST>
 
         <label><h2>Add my rating:</h2>
@@ -41,17 +48,5 @@
         <input type=submit value="Submit">
 
     </form>
-
-
-    <br>
-    <br>
-
-    <h3>Ratings:</h3>
-
-    {% for r in specific_movie.ratings %} 
-
-        <ul>{{ r.rating }}</ul>
-
-    {% endfor %}
 
 {% endblock %}

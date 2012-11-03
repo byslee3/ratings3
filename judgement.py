@@ -87,7 +87,39 @@ def show_specific_movie(id):
     else:
         predicted_rating = None
 
-    return render_template("show_specific_movie.html", specific_movie=specific_movie, average_rating=average_rating, predicted_rating=predicted_rating, existing_user_rating=existing_user_rating)
+    #Get the rating from the Judgemental Eye
+    the_eye = model.session.query(model.User).filter_by(email="the_eye").one()
+    eye_rating = model.session.query(model.Rating).filter(model.Rating.movie_id==specific_movie.id, model.Rating.user_id==the_eye.id).first()
+
+    if not eye_rating:
+        eye_rating = the_eye.predict_rating(specific_movie)
+    else:
+        eye_rating = eye_rating.rating
+
+    print eye_rating
+    print predicted_rating
+    print existing_user_rating
+
+    #Pick a response based on how much you and the Eye differ
+    if predicted_rating == "Not enough data":
+        difference = 99
+    elif predicted_rating:
+        difference = abs(eye_rating - predicted_rating)
+    else:
+        difference = abs(eye_rating - existing_user_rating)
+
+    messages = [ "I suppose you don't have such bad taste after all.",
+    "I regret every decision that I've ever made that has brought me to listen to your opinion.",
+    "Words fail me, as your taste in movies has clearly failed you.",
+    "That movie is great. For a clown to watch. Idiot.",
+    "You suck."]
+
+    if difference < 5:
+        beratement = messages[int(difference)]
+    else:
+        beratement = "You don't even have enough data for me to judge you."
+
+    return render_template("show_specific_movie.html", specific_movie=specific_movie, average_rating=average_rating, predicted_rating=predicted_rating, existing_user_rating=existing_user_rating, eye_rating=eye_rating, difference=difference, beratement=beratement)
 
 @app.route("/add_rating/<int:id>", methods=["GET","POST"])
 def add_rating(id):
